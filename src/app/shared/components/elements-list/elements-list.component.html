@@ -1,0 +1,55 @@
+@if(isOpened()){
+<div appCloseAccordion (clickOutside)="closeAccordion()" class="accordion">
+  <div class="accordion__item">
+    <input
+      [indeterminate]="markedAll()"
+      (change)="markAllCheckBoxes($event); markedAll.set(!markedAll())"
+      type="checkbox"
+    />
+    <label class="accordion__head font-gray" for="checkbox">{{
+      markedAll() ? "Снять выделение" : "Выбрать всё"
+    }}</label>
+  </div>
+  @for(item of categories$ | async; track item.id){
+  <div class="accordion__item">
+    <input
+      (change)="categoryCheckedChange(item.id, $event)"
+      [checked]="item.cheked || markedAll()"
+      type="checkbox"
+    />
+    <label
+      (click)="item.isOpen = !item.isOpen"
+      class="accordion__text font-gray"
+      >{{ item.name }}</label
+    >
+  </div>
+
+  <div [hidden]="!item.isOpen" class="accordion__item_categories">
+    @for(stage of item.stages; track stage.id){
+    <div [appStageColor]="stage.name" class="categories__item">
+      <input
+        [checked]="stage.cheked || markedAll()"
+        (change)="stageCheckedChange(item.id, stage.id, $event)"
+        type="checkbox"
+      />
+      <label class="accordion__text" for="checkbox">{{ stage.name }}</label>
+    </div>
+    }
+  </div>
+  }
+</div>
+} @else {
+<div class="selected__items" (click)="openAccordion()">
+  <input [indeterminate]="true" id="checkbox" type="checkbox" />
+  <label for="checkbox">{{
+    categoriesQuantity() +
+      " " +
+      "воронки" +
+      " " +
+      stagesQuantity() +
+      " " +
+      "этапов"
+  }}</label>
+</div>
+
+}
